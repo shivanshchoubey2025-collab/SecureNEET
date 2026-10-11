@@ -32,4 +32,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:5000/health || exit 1
 
 # Production WSGI server command
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "app:app"]
+CMD ["sh", "-c", "python seed_data.py; gunicorn --bind 0.0.0.0:5000 --workers 4 --threads 2 app:app"]
