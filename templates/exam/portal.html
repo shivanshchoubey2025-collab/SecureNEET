@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ exam.title }} — SecureNEET CBT</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/exam.css') }}">
+</head>
+<body class="exam-body">
+
+  <!-- EXAM TOP HEADER -->
+  <header class="exam-header">
+    <div>
+      <div class="exam-info-title">{{ exam.title }}</div>
+      <div class="exam-info-sub">
+        Code: <strong>{{ exam.code }}</strong> &bull; Candidate: <strong>{{ current_user.full_name }}</strong> (Roll: {{ current_user.registration_number or '—' }})
+      </div>
+    </div>
+
+    <div class="exam-header-right">
+      <div class="timer-box">
+        <span style="font-size: 0.9rem; font-weight: 500; opacity: 0.85;">TIME LEFT:</span>
+        <span id="examTimer">00:00:00</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- SUBJECT TABS BAR -->
+  <nav class="subject-nav" id="subjectNav">
+    <!-- Rendered dynamically by ExamController -->
+  </nav>
+
+  <!-- WORKSPACE LAYOUT -->
+  <main class="exam-layout">
+    <!-- LEFT: QUESTION DISPLAY PANE -->
+    <section class="exam-question-pane">
+      <div class="question-header">
+        <div>
+          <span class="q-number-badge" id="currentQNum">Question 1</span>
+          <span class="badge badge-secondary" id="currentSubjectBadge" style="margin-left: 0.5rem;">Physics</span>
+        </div>
+        <div class="q-marks-badge" id="marksBadge">
+          +4.00 / -1.00
+        </div>
+      </div>
+
+      <div class="question-body">
+        <div class="question-text" id="questionText">
+          Loading question text...
+        </div>
+
+        <div class="options-list" id="optionsContainer">
+          <!-- Rendered dynamically by ExamController -->
+        </div>
+      </div>
+
+      <!-- FOOTER CONTROLS -->
+      <footer class="exam-footer">
+        <div class="footer-btn-group">
+          <button type="button" class="btn btn-secondary btn-sm" id="btnMarkReview" style="color: #7c3aed; border-color: #c4b5fd;">
+            Mark for Review & Next
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" id="btnClearResponse">
+            Clear Response
+          </button>
+        </div>
+
+        <div class="footer-btn-group">
+          <button type="button" class="btn btn-secondary" id="btnPrev">
+            Previous
+          </button>
+          <button type="button" class="btn btn-primary" id="btnSaveNext">
+            Save & Next →
+          </button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- RIGHT: QUESTION PALETTE -->
+    <aside class="exam-palette-pane">
+      <div class="palette-header">
+        QUESTION PALETTE
+      </div>
+
+      <!-- Legend -->
+      <div class="palette-legend">
+        <div class="legend-item">
+          <span class="legend-badge status-answered">✓</span>
+          <span>Answered</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-badge status-not-answered">✕</span>
+          <span>Not Answered</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-badge status-not-visited">○</span>
+          <span>Not Visited</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-badge status-marked">★</span>
+          <span>Marked for Review</span>
+        </div>
+        <div class="legend-item" style="grid-column: 1 / -1;">
+          <span class="legend-badge status-marked-answered">★</span>
+          <span>Answered & Marked for Review</span>
+        </div>
+      </div>
+
+      <!-- Grid of questions -->
+      <div class="palette-grid" id="paletteGrid">
+        <!-- Rendered dynamically by ExamController -->
+      </div>
+
+      <!-- Submit area -->
+      <div class="palette-submit-area">
+        <button type="button" class="btn btn-success" id="btnOpenSubmit" style="width: 100%; font-size: 1.05rem; padding: 0.75rem;">
+          Submit Test
+        </button>
+      </div>
+    </aside>
+  </main>
+
+  <!-- SUBMISSION CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="submitModal">
+    <div class="modal-card">
+      <h2 class="modal-title">Confirm Final Submission</h2>
+      <p style="color: #64748b; font-size: 0.95rem;">
+        Are you sure you want to finalize your examination? Once submitted, you cannot modify your answers.
+      </p>
+
+      <div class="modal-summary-grid">
+        <div class="summary-stat-box">
+          <div class="summary-stat-num" id="statAnsweredCount" style="color: #10b981;">0</div>
+          <div class="summary-stat-lbl">Answered</div>
+        </div>
+        <div class="summary-stat-box">
+          <div class="summary-stat-num" id="statNotAnsweredCount" style="color: #ef4444;">0</div>
+          <div class="summary-stat-lbl">Not Answered</div>
+        </div>
+        <div class="summary-stat-box">
+          <div class="summary-stat-num" id="statMarkedCount" style="color: #8b5cf6;">0</div>
+          <div class="summary-stat-lbl">Marked for Review</div>
+        </div>
+        <div class="summary-stat-box">
+          <div class="summary-stat-num" id="statNotVisitedCount" style="color: #64748b;">0</div>
+          <div class="summary-stat-lbl">Not Visited</div>
+        </div>
+      </div>
+
+      <form id="finalSubmitForm" method="POST" action="{{ url_for('exam.submit_exam', attempt_id=attempt.id) }}">
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="btnCloseModal">
+            Return to Test
+          </button>
+          <button type="submit" class="btn btn-danger">
+            Confirm & Submit Examination
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/exam.js') }}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const questionsData = {{ questions|tojson }};
+      const savedAnswersData = {{ saved_answers|tojson }};
+      const remainingSecs = {{ remaining_seconds }};
+      const attemptId = {{ attempt.id }};
+
+      window.controller = new ExamController({
+        attemptId: attemptId,
+        remainingSeconds: remainingSecs,
+        questions: questionsData,
+        savedAnswers: savedAnswersData
+      });
+    });
+  </script>
+</body>
+</html>

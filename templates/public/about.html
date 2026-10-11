@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}About SecureNEET — System Architecture & Exam Integrity{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-header">
+    <h1 class="card-title">About SecureNEET</h1>
+    <span class="badge badge-success">ENTERPRISE SECURE ARCHITECTURE</span>
+  </div>
+  <div style="font-size: 1.05rem; line-height: 1.8; color: #334155;">
+    <p style="margin-bottom: 1.25rem;">
+      <strong>SecureNEET</strong> is a next-generation competitive examination platform built specifically to deliver an authentic, proctored, and uncompromised testing experience for the National Eligibility cum Entrance Test for Undergraduates (NEET-UG).
+    </p>
+
+    <h2 style="font-size: 1.35rem; color: #0f172a; margin: 1.5rem 0 0.75rem;">Core Integrity Principles</h2>
+    <ul style="padding-left: 1.5rem; margin-bottom: 1.5rem;">
+      <li style="margin-bottom: 0.5rem;"><strong>Server-Authoritative Clock:</strong> Examination timers and strict deadlines are calculated and enforced directly on the backend server. Client-side clock manipulation or JavaScript tampering cannot extend the allocated exam duration.</li>
+      <li style="margin-bottom: 0.5rem;"><strong>Continuous Periodic Autosave:</strong> Responses are encrypted and saved continuously via asynchronous API endpoints. In the event of a power surge or browser refresh, candidate responses are immediately restored.</li>
+      <li style="margin-bottom: 0.5rem;"><strong>Strict Role-Based Access Control (RBAC):</strong> Student, Question Manager, and Administrator privileges are enforced at the HTTP API layer, prohibiting privilege escalation and unauthorized inspection of question keys.</li>
+      <li style="margin-bottom: 0.5rem;"><strong>Deterministic Tie-Breaking & Topper Algorithms:</strong> All-India, State Topper, and Gender Topper leaderboards are evaluated against actual database scores using consistent tie-breaking rules: higher score, followed by lower completion time, followed by shared rank.</li>
+    </ul>
+
+    <h2 style="font-size: 1.35rem; color: #0f172a; margin: 1.5rem 0 0.75rem;">Subjects Covered</h2>
+    <p>
+      SecureNEET delivers tests adhering strictly to the NTA syllabus across four key disciplines: <strong>Physics</strong>, <strong>Chemistry</strong>, <strong>Botany</strong>, and <strong>Zoology</strong>, with standard +4 / -1 marking schemes and full solution explanations released post-evaluation.
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Terms & Conditions — SecureNEET{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 0 auto 2rem; padding: 2.5rem;">
+  <h1 style="font-size: 2rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem;">SecureNEET Examination Terms & Conditions</h1>
+  
+  <div style="color: #334155; line-height: 1.8;">
+    <h2 style="font-size: 1.25rem; color: #0f172a; margin-top: 1.5rem;">1. Examination Code of Conduct</h2>
+    <p>
+      By attempting examinations hosted on SecureNEET, candidates agree to adhere to strict academic honesty principles. Any attempt to reverse engineer client payloads, tamper with timer deadlines, or submit unauthorized requests will result in immediate disqualification and account deactivation.
+    </p>
+
+    <h2 style="font-size: 1.25rem; color: #0f172a; margin-top: 1.5rem;">2. Server-Authoritative Timing</h2>
+    <p>
+      Examination durations are calculated and controlled solely by the SecureNEET backend server. When the allocated deadline lapses, the examination attempt is automatically locked and submitted for evaluation.
+    </p>
+
+    <h2 style="font-size: 1.25rem; color: #0f172a; margin-top: 1.5rem;">3. Score Evaluation Policy</h2>
+    <p>
+      Scores are computed using the designated positive (+4) and negative (-1) marking rules of each question. Unanswered questions do not incur negative deductions.
+    </p>
+  </div>
+</div>
+{% endblock %}

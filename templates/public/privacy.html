@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Privacy Policy — SecureNEET{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 0 auto 2rem; padding: 2.5rem;">
+  <h1 style="font-size: 2rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem;">SecureNEET Privacy Policy</h1>
+  
+  <div style="color: #334155; line-height: 1.8;">
+    <h2 style="font-size: 1.25rem; color: #0f172a; margin-top: 1.5rem;">1. Information We Collect</h2>
+    <p>
+      SecureNEET collects basic candidate profile information including full name, verified email address, voluntarily disclosed State/UT of residence, and voluntary gender categorization for regional and demographic leaderboard aggregation.
+    </p>
+
+    <h2 style="font-size: 1.25rem; color: #0f172a; margin-top: 1.5rem;">2. Use of Examination Telemetry</h2>
+    <p>
+      During active computer-based examination sessions, SecureNEET records timestamped interaction logs (answer choices, question transitions, and submission events) to verify examination integrity and calculate authoritative scores.
+    </p>
+
+    <h2 style="font-size: 1.25rem; color: #0f172a; margin-top: 1.5rem;">3. State & Demographic Data Protection</h2>
+    <p>
+      In accordance with our data minimization principles, disclosure of state and gender categories is voluntary. Candidates may choose "Prefer not to say" or leave demographic fields blank without impacting their ability to participate in All-India examinations or appear on the Overall Leaderboard.
+    </p>
+
+    <h2 style="font-size: 1.25rem; color: #0f172a; margin-top: 1.5rem;">4. Security & Retention</h2>
+    <p>
+      Candidate credentials are encrypted using industry-standard cryptographic PBKDF2 hashing. Plaintext passwords are never stored or transmitted in plain sight. Examination question keys remain confidential until published by administrators.
+    </p>
+  </div>
+</div>
+{% endblock %}

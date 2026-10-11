@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% block title %}Candidate Dashboard — SecureNEET{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <!-- Welcome Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800; color: #0f172a;">Welcome, {{ student.full_name }}</h1>
+      <p style="color: #64748b; font-size: 0.95rem;">
+        Roll No: <strong style="font-family: monospace; color: #0f4c81;">{{ student.registration_number or 'N/A' }}</strong> &bull;
+        State: <span class="badge badge-secondary">{{ student.state or 'Not Selected' }}</span> &bull;
+        Gender Category: <span>{{ student.gender or 'Not Disclosed' }}</span>
+      </p>
+    </div>
+    <div>
+      <a href="{{ url_for('student.profile') }}" class="btn btn-secondary">Edit Profile</a>
+    </div>
+  </div>
+
+  <!-- Performance Summary Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">Completed Tests</div>
+      <div class="stat-value">{{ stats.total_attempts }}</div>
+      <div class="stat-sub">Evaluated examinations</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Highest Score</div>
+      <div class="stat-value" style="color: #0f4c81;">{{ stats.best_score }}</div>
+      <div class="stat-sub">Across all mock tests</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Best All-India Rank</div>
+      <div class="stat-value" style="color: #f59e0b;">
+        {% if stats.best_overall_rank %}#{{ stats.best_overall_rank }}{% else %}—{% endif %}
+      </div>
+      <div class="stat-sub">Overall Leaderboard</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Best State Rank</div>
+      <div class="stat-value" style="color: #10b981;">
+        {% if stats.best_state_rank %}State #{{ stats.best_state_rank }}{% else %}—{% endif %}
+      </div>
+      <div class="stat-sub">{{ student.state or 'Regional rank' }}</div>
+    </div>
+  </div>
+
+  <!-- In-Progress Attempt Alert -->
+  {% if ongoing_attempt %}
+  <div class="card" style="border: 2px solid #f59e0b; background: #fffbeb; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span class="badge badge-warning" style="margin-bottom: 0.5rem;">ATTEMPT IN PROGRESS</span>
+        <h2 style="font-size: 1.3rem; font-weight: 700; color: #92400e; margin-bottom: 0.25rem;">
+          {{ ongoing_attempt.exam_title }} ({{ ongoing_attempt.exam_code }})
+        </h2>
+        <p style="font-size: 0.9rem; color: #78350f;">
+          Your examination session is live. Responses are autosaved on the server.
+        </p>
+      </div>
+      <a href="{{ url_for('exam.portal', attempt_id=ongoing_attempt.id) }}" class="btn btn-primary btn-lg">
+        Resume Examination →
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Available Mock Exams -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h2 class="card-title">Available Mock Tests</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; margin-top: 1rem;">
+      {% for ex in available_exams %}
+      <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.25rem; background: #f8fafc; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span class="badge badge-primary">{{ ex.code }}</span>
+            <span style="font-size: 0.8rem; font-weight: 600; color: #475569;">{{ ex.duration_minutes }} Mins</span>
+          </div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">{{ ex.title }}</h3>
+          <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">{{ ex.description }}</p>
+        </div>
+        <div>
+          <div style="font-size: 0.85rem; color: #475569; margin-bottom: 1rem; border-top: 1px solid #e2e8f0; padding-top: 0.75rem; display: flex; justify-content: space-between;">
+            <span>Marks: <strong>{{ ex.total_marks }}</strong></span>
+            <span>Questions: <strong>{{ ex.question_count }}</strong></span>
+          </div>
+          <a href="{{ url_for('exam.instructions', exam_id=ex.id) }}" class="btn btn-primary" style="width: 100%;">
+            Start Mock Test
+          </a>
+        </div>
+      </div>
+      {% else %}
+      <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem; color: #64748b;">
+        You have attempted all currently available examinations! Check back later for new national test papers.
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Examination History & Results -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Completed Examination History</h2>
+    </div>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Examination</th>
+            <th>Code</th>
+            <th>Score</th>
+            <th>Percentage</th>
+            <th>All-India Rank</th>
+            <th>State Rank</th>
+            <th>Gender Rank</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for att in completed_attempts %}
+          <tr>
+            <td style="font-weight: 700; color: #0f172a;">{{ att.exam_title }}</td>
+            <td style="font-size: 0.85rem; color: #475569;">{{ att.exam_code }}</td>
+            <td style="font-weight: 800; color: #0f4c81; font-size: 1.1rem;">
+              {{ att.total_score }} / {{ att.total_marks }}
+            </td>
+            <td><strong>{{ att.percentage }}%</strong></td>
+            <td>
+              {% if att.overall_rank %}
+                <span class="badge badge-primary">AIR #{{ att.overall_rank }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if att.state_rank %}
+                <span class="badge badge-success">State #{{ att.state_rank }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if att.gender_rank %}
+                <span class="badge badge-secondary">Cat #{{ att.gender_rank }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td><span class="badge badge-success">{{ att.status }}</span></td>
+            <td>
+              <a href="{{ url_for('student.result_detail', attempt_id=att.id) }}" class="btn btn-secondary btn-sm">
+                View Scorecard →
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 3rem; color: #64748b;">
+              You have not completed any examination attempts yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

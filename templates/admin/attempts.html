@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Attempts — {{ exam.title }} — SecureNEET Admin{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-header">
+    <div>
+      <h1 class="card-title">Candidate Attempts Roster</h1>
+      <p style="font-size: 0.9rem; color: #64748b;">
+        Exam: <strong>{{ exam.title }}</strong> (Code: {{ exam.code }}) &bull; Total Attempts: {{ attempts|length }}
+      </p>
+    </div>
+    <a href="{{ url_for('admin.exams') }}" class="btn btn-secondary btn-sm">← Back to Exams</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Candidate Name</th>
+          <th>Roll No</th>
+          <th>Email</th>
+          <th>State</th>
+          <th>Gender</th>
+          <th>Total Score</th>
+          <th>Percentage</th>
+          <th>Time Taken</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in attempts %}
+        <tr>
+          <td style="font-weight: 700; color: #0f172a;">{{ a.full_name }}</td>
+          <td style="font-family: monospace;">{{ a.registration_number or '—' }}</td>
+          <td>{{ a.email }}</td>
+          <td><span class="badge badge-secondary">{{ a.state or 'Not Disclosed' }}</span></td>
+          <td>{{ a.gender or 'N/A' }}</td>
+          <td style="font-weight: 800; color: #0f4c81; font-size: 1.1rem;">
+            {{ a.total_score }} / {{ exam.total_marks }}
+          </td>
+          <td><strong>{{ a.percentage }}%</strong></td>
+          <td style="font-size: 0.85rem; color: #64748b;">
+            {{ (a.time_taken_seconds // 60) }}m {{ (a.time_taken_seconds % 60) }}s
+          </td>
+          <td>
+            <span class="badge {% if a.status == 'evaluated' %}badge-success{% else %}badge-warning{% endif %}">
+              {{ a.status }}
+            </span>
+          </td>
+          <td>
+            <a href="{{ url_for('student.result_detail', attempt_id=a.id) }}" class="btn btn-secondary btn-sm">
+              Scorecard
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="10" style="text-align: center; padding: 3rem; color: #64748b;">
+            No candidate attempts recorded for this examination yet.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

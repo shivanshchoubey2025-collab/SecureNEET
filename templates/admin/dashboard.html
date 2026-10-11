@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}Admin Console — SecureNEET{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <!-- Header with Quick Action Buttons -->
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800; color: #0f172a;">Administrator Console</h1>
+      <p style="color: #64748b; font-size: 0.95rem;">
+        National NEET testing platform administration, questions, and telemetry
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <a href="{{ url_for('admin.create_exam') }}" class="btn btn-primary btn-sm">+ Create Examination</a>
+      <a href="{{ url_for('admin.create_question') }}" class="btn btn-success btn-sm">+ Add Question</a>
+      {% if user.role == 'admin' %}
+        <a href="{{ url_for('admin.export_students_csv') }}" class="btn btn-secondary btn-sm">Export Students CSV</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Real Database Statistics Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">Enrolled Students</div>
+      <div class="stat-value">{{ stats.total_students }}</div>
+      <div class="stat-sub">{{ stats.active_students }} Active Aspirants</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Examinations</div>
+      <div class="stat-value">{{ stats.total_exams }}</div>
+      <div class="stat-sub">{{ stats.published_exams }} Published Papers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Question Bank</div>
+      <div class="stat-value" style="color: #0f4c81;">{{ stats.total_questions }}</div>
+      <div class="stat-sub">Across 4 Medical Subjects</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Evaluated Attempts</div>
+      <div class="stat-value" style="color: #10b981;">{{ stats.completed_attempts }}</div>
+      <div class="stat-sub">Of {{ stats.total_attempts }} Total Initiations</div>
+    </div>
+  </div>
+
+  <!-- Recent Examination Activity & Attempts -->
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Recent Attempts -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Recent Candidate Attempts</h2>
+        <a href="{{ url_for('admin.exams') }}" class="btn btn-secondary btn-sm">View All Exams</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>State</th>
+              <th>Exam Title</th>
+              <th>Score</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in recent_attempts %}
+            <tr>
+              <td style="font-weight: 700; color: #0f172a;">{{ a.full_name }}</td>
+              <td><span class="badge badge-secondary">{{ a.state or 'N/A' }}</span></td>
+              <td style="font-size: 0.85rem; color: #475569;">{{ a.exam_title }}</td>
+              <td style="font-weight: 800; color: #0f4c81;">{{ a.total_score }} ({{ a.percentage }}%)</td>
+              <td>
+                <span class="badge {% if a.status == 'evaluated' %}badge-success{% else %}badge-warning{% endif %}">
+                  {{ a.status }}
+                </span>
+              </td>
+              <td>
+                <a href="{{ url_for('student.result_detail', attempt_id=a.id) }}" class="btn btn-secondary btn-sm">
+                  Review
+                </a>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="6" style="text-align: center; color: #64748b; padding: 2rem;">No candidate attempts recorded yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Panels -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title" style="font-size: 1.1rem;">Management Quick Links</h2>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <a href="{{ url_for('admin.students') }}" class="btn btn-secondary" style="justify-content: flex-start;">
+            👥 Student Roster & Management
+          </a>
+          <a href="{{ url_for('admin.exams') }}" class="btn btn-secondary" style="justify-content: flex-start;">
+            📝 Examination Papers Management
+          </a>
+          <a href="{{ url_for('admin.questions') }}" class="btn btn-secondary" style="justify-content: flex-start;">
+            ❓ Question Bank & Subject Editor
+          </a>
+          {% if user.role == 'admin' %}
+            <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-secondary" style="justify-content: flex-start;">
+              🛡️ System Audit & Security Trail
+            </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Recent Security Audits -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title" style="font-size: 1.1rem;">Recent System Logs</h2>
+        </div>
+        <div style="font-size: 0.8rem; color: #64748b; display: flex; flex-direction: column; gap: 0.6rem;">
+          {% for log in recent_logs %}
+          <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 0.4rem;">
+            <strong style="color: #0f172a;">{{ log.action }}</strong> &bull; {{ log.full_name or 'System' }}
+            <div style="color: #94a3b8; font-size: 0.75rem;">{{ log.created_at }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

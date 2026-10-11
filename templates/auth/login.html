@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Sign In — SecureNEET{% endblock %}
+
+{% block content %}
+<div style="max-width: 440px; margin: 3rem auto;">
+  <div class="card" style="padding: 2.25rem;">
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <span class="brand-badge" style="display: inline-block; margin-bottom: 0.75rem;">SECURE PORTAL</span>
+      <h1 style="font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;">Candidate & Staff Login</h1>
+      <p style="color: #64748b; font-size: 0.9rem;">Sign in to access your examinations and dashboard</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
+      <div class="form-group">
+        <label for="email" class="form-label">Registered Email Address</label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="name@example.com" required autofocus>
+      </div>
+
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+          <label for="password" class="form-label" style="margin-bottom: 0;">Password</label>
+          <a href="{{ url_for('auth.forgot_password') }}" style="font-size: 0.8rem;">Forgot password?</a>
+        </div>
+        <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.75rem;">
+        Sign In to SecureNEET
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; font-size: 0.9rem; color: #64748b;">
+      New candidate? <a href="{{ url_for('auth.register') }}" style="font-weight: 600;">Register for NEET Mock Tests</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

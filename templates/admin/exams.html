@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Manage Examinations — SecureNEET Admin{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-header">
+    <div>
+      <h1 class="card-title">Examination Papers</h1>
+      <p style="font-size: 0.9rem; color: #64748b;">
+        Configure examination parameters, marking policies, publishing status, and inspect attempt rosters
+      </p>
+    </div>
+    {% if current_user.role == 'admin' %}
+      <a href="{{ url_for('admin.create_exam') }}" class="btn btn-primary btn-sm">+ Create New Examination</a>
+    {% endif %}
+  </div>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Title</th>
+          <th>Duration</th>
+          <th>Total Marks</th>
+          <th>Marking Scheme</th>
+          <th>Questions</th>
+          <th>Attempts</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in exams %}
+        <tr>
+          <td><span class="badge badge-primary">{{ e.code }}</span></td>
+          <td style="font-weight: 700; color: #0f172a;">{{ e.title }}</td>
+          <td>{{ e.duration_minutes }} Mins</td>
+          <td>{{ e.total_marks }}</td>
+          <td style="font-weight: 600; color: #059669;">+{{ e.positive_marks }} / -{{ e.negative_marks }}</td>
+          <td>
+            <a href="{{ url_for('admin.questions', exam_id=e.id) }}" style="font-weight: 700;">
+              {{ e.question_count }} Questions
+            </a>
+          </td>
+          <td>
+            <a href="{{ url_for('admin.exam_attempts', exam_id=e.id) }}" class="btn btn-secondary btn-sm">
+              {{ e.total_attempts }} Attempts
+            </a>
+          </td>
+          <td>
+            {% if e.is_published %}
+              <span class="badge badge-success">Published</span>
+            {% else %}
+              <span class="badge badge-warning">Draft / Hidden</span>
+            {% endif %}
+          </td>
+          <td>
+            <div style="display: flex; gap: 0.5rem;">
+              {% if current_user.role == 'admin' %}
+                <a href="{{ url_for('admin.edit_exam', exam_id=e.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                <form method="POST" action="{{ url_for('admin.toggle_publish_exam', exam_id=e.id) }}" style="display: inline;">
+                  {% if e.is_published %}
+                    <button type="submit" class="btn btn-danger btn-sm">Unpublish</button>
+                  {% else %}
+                    <button type="submit" class="btn btn-success btn-sm">Publish</button>
+                  {% endif %}
+                </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="9" style="text-align: center; padding: 3rem; color: #64748b;">
+            No examinations configured in the system yet.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

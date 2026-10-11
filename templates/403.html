@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}403 Access Denied — SecureNEET{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 3rem auto;">
+  <h1 style="font-size: 5rem; font-weight: 800; color: #dc2626; line-height: 1;">403</h1>
+  <h2 style="font-size: 1.5rem; margin: 1rem 0; color: #0f172a;">Access Denied</h2>
+  <p style="color: #64748b; margin-bottom: 2rem;">
+    You do not possess the required authorization or credentials to inspect this administrative endpoint or another candidate's private examination attempt.
+  </p>
+  <div>
+    <a href="{{ url_for('public.index') }}" class="btn btn-secondary">Go to Home</a>
+  </div>
+</div>
+{% endblock %}

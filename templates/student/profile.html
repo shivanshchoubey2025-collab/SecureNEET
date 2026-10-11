@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Candidate Profile — SecureNEET{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 2rem auto;">
+  <div class="card" style="padding: 2.25rem;">
+    <h1 style="font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;">Candidate Profile</h1>
+    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">
+      Manage your registration details and demographic preferences.
+    </p>
+
+    <form method="POST" action="{{ url_for('student.profile') }}">
+      <div class="form-group">
+        <label class="form-label">Official Registration Number</label>
+        <input type="text" class="form-control" value="{{ student.registration_number or 'Unassigned' }}" readonly style="background: #f1f5f9; font-family: monospace;">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Registered Email</label>
+        <input type="email" class="form-control" value="{{ student.email }}" readonly style="background: #f1f5f9;">
+        <span class="form-text">Email address is permanently bound to candidate examination history.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="full_name" class="form-label">Full Name *</label>
+        <input type="text" id="full_name" name="full_name" class="form-control" value="{{ student.full_name }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="state" class="form-label">State / Union Territory (for State Topper Rankings)</label>
+        <select id="state" name="state" class="form-select">
+          <option value="">— Not Selected —</option>
+          {% for st in states %}
+            <option value="{{ st }}" {% if student.state == st %}selected{% endif %}>{{ st }}</option>
+          {% endfor %}
+        </select>
+        <span class="form-text">Updating your state will categorize future evaluated attempts under this state.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="gender" class="form-label">Gender (Voluntary Category Declaration)</label>
+        <select id="gender" name="gender" class="form-select">
+          {% for g in genders %}
+            <option value="{{ g }}" {% if student.gender == g %}selected{% endif %}>{{ g }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+        Save Profile Changes
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

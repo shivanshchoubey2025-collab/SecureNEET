@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Instructions — {{ exam.title }} — SecureNEET{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 1.5rem auto;">
+  <div class="card" style="padding: 2.25rem;">
+    <div style="border-bottom: 2px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+      <span class="badge badge-primary" style="margin-bottom: 0.5rem;">CBT GENERAL INSTRUCTIONS</span>
+      <h1 style="font-size: 1.8rem; font-weight: 800; color: #0f172a;">{{ exam.title }}</h1>
+      <p style="color: #64748b; font-size: 0.95rem;">Please read the examination protocol and marking scheme carefully before proceeding.</p>
+    </div>
+
+    <!-- Exam Parameters Summary -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: var(--radius-md);">
+      <div>
+        <span style="font-size: 0.8rem; color: #64748b; display: block;">TEST DURATION</span>
+        <strong style="font-size: 1.2rem; color: #0f172a;">{{ exam.duration_minutes }} Minutes</strong>
+      </div>
+      <div>
+        <span style="font-size: 0.8rem; color: #64748b; display: block;">TOTAL MARKS</span>
+        <strong style="font-size: 1.2rem; color: #0f172a;">{{ exam.total_marks }} Marks</strong>
+      </div>
+      <div>
+        <span style="font-size: 0.8rem; color: #64748b; display: block;">TOTAL QUESTIONS</span>
+        <strong style="font-size: 1.2rem; color: #0f172a;">{{ question_count }} Questions</strong>
+      </div>
+      <div>
+        <span style="font-size: 0.8rem; color: #64748b; display: block;">MARKING SCHEME</span>
+        <strong style="font-size: 1.2rem; color: #059669;">+{{ exam.positive_marks }} / -{{ exam.negative_marks }}</strong>
+      </div>
+    </div>
+
+    <!-- Official Rules List -->
+    <h2 style="font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem;">Important Examination Guidelines</h2>
+    <ol style="padding-left: 1.5rem; color: #334155; line-height: 1.8; margin-bottom: 2rem;">
+      <li>The examination clock will be maintained on the central SecureNEET server. A countdown timer will appear at the top-right corner of your screen.</li>
+      <li>Each question is a multiple-choice question with four choices (A, B, C, D), out of which only one is correct.</li>
+      <li><strong>Scoring Rules:</strong> For each correct response, <strong>+{{ exam.positive_marks }} marks</strong> will be awarded. For each incorrect response, <strong>{{ exam.negative_marks }} mark</strong> will be deducted. Unanswered questions receive <strong>0 marks</strong>.</li>
+      <li>You can navigate freely between questions and subjects (Physics, Chemistry, Botany, Zoology) at any time during the test.</li>
+      <li>Your responses are saved continuously on the server. If your session is interrupted or refreshed, your saved answers will remain intact upon reload.</li>
+      <li>When the timer reaches zero, the examination will automatically finalize and submit your responses for evaluation.</li>
+    </ol>
+
+    <!-- Start Form -->
+    <form method="POST" action="{{ url_for('exam.start_exam', exam_id=exam.id) }}">
+      <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.95rem; font-weight: 600; color: #1e3a8a;">
+          <input type="checkbox" id="acknowledgeCheck" required style="width: 18px; height: 18px;">
+          I have read and understood all instructions. I am ready to begin the test.
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-success btn-lg" style="width: 100%;">
+        Enter Examination Portal →
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

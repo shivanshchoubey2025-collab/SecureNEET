@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}Examination Scorecard — {{ attempt.exam_title }} — SecureNEET{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2.5rem;">
+  <!-- Scorecard Banner -->
+  <div class="card" style="border-top: 6px solid #0f4c81; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1.5rem;">
+      <div>
+        <span class="badge badge-success" style="font-size: 0.8rem; margin-bottom: 0.5rem;">OFFICIAL EVALUATED SCORECARD</span>
+        <h1 style="font-size: 2rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;">
+          {{ attempt.exam_title }}
+        </h1>
+        <p style="color: #64748b; font-size: 0.95rem;">
+          Candidate: <strong>{{ attempt.full_name }}</strong> &bull;
+          Roll No: <span style="font-family: monospace;">{{ attempt.registration_number or '—' }}</span> &bull;
+          State: <strong>{{ attempt.state or 'Not Disclosed' }}</strong> &bull;
+          Submitted: {{ attempt.submitted_at }}
+        </p>
+      </div>
+
+      <div style="text-align: right;">
+        <span style="font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase; display: block;">FINAL SCORE</span>
+        <div style="font-size: 2.8rem; font-weight: 900; color: #0f4c81; line-height: 1;">
+          {{ attempt.total_score }} <span style="font-size: 1.3rem; color: #64748b; font-weight: 600;">/ {{ attempt.total_marks }}</span>
+        </div>
+        <div style="font-size: 1.1rem; font-weight: 700; color: #059669; margin-top: 0.25rem;">
+          {{ attempt.percentage }}%
+        </div>
+      </div>
+    </div>
+
+    <!-- Ranks Row -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center;">
+        <span style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">ALL-INDIA RANK</span>
+        <div style="font-size: 1.6rem; font-weight: 800; color: #0f172a;">
+          {% if attempt.overall_rank %}AIR #{{ attempt.overall_rank }}{% else %}—{% endif %}
+        </div>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center;">
+        <span style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">STATE RANK ({{ attempt.state or 'State' }})</span>
+        <div style="font-size: 1.6rem; font-weight: 800; color: #059669;">
+          {% if attempt.state_rank %}State #{{ attempt.state_rank }}{% else %}—{% endif %}
+        </div>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center;">
+        <span style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">GENDER CATEGORY RANK</span>
+        <div style="font-size: 1.6rem; font-weight: 800; color: #6366f1;">
+          {% if attempt.gender_rank %}Cat #{{ attempt.gender_rank }}{% else %}—{% endif %}
+        </div>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center;">
+        <span style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">TIME DURATION</span>
+        <div style="font-size: 1.6rem; font-weight: 800; color: #475569;">
+          {{ (attempt.time_taken_seconds // 60) }}m {{ (attempt.time_taken_seconds % 60) }}s
+        </div>
+      </div>
+    </div>
+
+    <!-- High-Level Counts -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 1.25rem;">
+      <div>
+        <span style="font-size: 0.8rem; color: #64748b;">Answered</span>
+        <div style="font-size: 1.3rem; font-weight: 700; color: #0f172a;">{{ attempt.questions_answered }}</div>
+      </div>
+      <div>
+        <span style="font-size: 0.8rem; color: #059669;">Correct (+{{ attempt.positive_marks }})</span>
+        <div style="font-size: 1.3rem; font-weight: 700; color: #059669;">{{ attempt.correct_answers }}</div>
+      </div>
+      <div>
+        <span style="font-size: 0.8rem; color: #dc2626;">Incorrect (-{{ attempt.negative_marks }})</span>
+        <div style="font-size: 1.3rem; font-weight: 700; color: #dc2626;">{{ attempt.incorrect_answers }}</div>
+      </div>
+      <div>
+        <span style="font-size: 0.8rem; color: #64748b;">Unanswered (0)</span>
+        <div style="font-size: 1.3rem; font-weight: 700; color: #64748b;">{{ attempt.unanswered_count }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subject-wise Performance Breakdown -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h2 class="card-title">Subject-Wise Performance Breakdown</h2>
+    </div>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Total Questions</th>
+            <th>Attempted</th>
+            <th>Correct</th>
+            <th>Incorrect</th>
+            <th>Marks Obtained</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for subj, st in subject_stats.items() %}
+          <tr>
+            <td style="font-weight: 700; color: #0f172a;">{{ subj }}</td>
+            <td>{{ st.total }}</td>
+            <td>{{ st.answered }}</td>
+            <td style="color: #059669; font-weight: 600;">{{ st.correct }}</td>
+            <td style="color: #dc2626; font-weight: 600;">{{ st.incorrect }}</td>
+            <td style="font-weight: 800; color: #0f4c81; font-size: 1.1rem;">{{ st.score }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Detailed Question & Solution Review -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Detailed Question Review & Official Solutions</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1rem;">
+      {% for q in questions %}
+      <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.25rem; background: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem;">
+          <div>
+            <span style="font-weight: 800; color: #0f172a; font-size: 1.05rem;">Q{{ loop.index }}.</span>
+            <span class="badge badge-secondary" style="margin-left: 0.5rem;">{{ q.subject }}</span>
+            <span style="font-size: 0.8rem; color: #64748b; margin-left: 0.5rem;">{{ q.topic or '' }}</span>
+          </div>
+          <div>
+            {% if q.selected_option %}
+              {% if q.is_correct == 1 %}
+                <span class="badge badge-success">+{{ q.marks_awarded }} Correct</span>
+              {% else %}
+                <span class="badge badge-danger">{{ q.marks_awarded }} Wrong</span>
+              {% endif %}
+            {% else %}
+              <span class="badge badge-secondary">Not Attempted (0.00)</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <p style="font-size: 1.05rem; font-weight: 500; color: #1e293b; margin-bottom: 1rem; line-height: 1.5;">
+          {{ q.question_text }}
+        </p>
+
+        <!-- Options Display -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+          {% for opt_key, opt_text in [('A', q.option_a), ('B', q.option_b), ('C', q.option_c), ('D', q.option_d)] %}
+            <div style="padding: 0.65rem 0.9rem; border-radius: 6px; border: 1.5px solid {% if q.correct_option == opt_key %}#10b981{% elif q.selected_option == opt_key %}#ef4444{% else %}#e2e8f0{% endif %}; background: {% if q.correct_option == opt_key %}#ecfdf5{% elif q.selected_option == opt_key %}#fef2f2{% else %}#f8fafc{% endif %}; font-size: 0.9rem;">
+              <strong>({{ opt_key }})</strong> {{ opt_text }}
+              {% if q.correct_option == opt_key %}<span style="color: #059669; font-weight: 700; float: right;">✓ Correct Answer</span>{% endif %}
+              {% if q.selected_option == opt_key and q.correct_option != opt_key %}<span style="color: #dc2626; font-weight: 700; float: right;">✗ Your Choice</span>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Explanation -->
+        {% if q.explanation %}
+        <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 0.85rem; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #0369a1;">
+          <strong>Official Explanation:</strong> {{ q.explanation }}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
